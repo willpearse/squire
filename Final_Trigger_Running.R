@@ -1,6 +1,14 @@
+
+odin::can_compile()
+
+pkgbuild::find_rtools(debug = TRUE)
+odin::odin_package(".")
+devtools::document()
+install.packages("zoo")
+library(devtools)
 # Loading Required Libraries
 library(tidyverse); library(zoo)
-
+pkgbuild::check_build_tools(debug = TRUE)
 # Sourcing Functions for Running Model With Threshold Based Triggers
 source("trigger_running_function.R")
 load("data/income_strata_healthcare_capacity.rda")

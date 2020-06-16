@@ -91,7 +91,8 @@ beta_est_explicit <- function(dur_IMild, dur_ICase, prob_hosp, mixing_matrix, R0
 #'
 # #' @examples
 beta_est_env_explicit <- function(dur_IMild, dur_ICase, prob_hosp, mixing_matrix, R0, env_slp, env_dat) {
-  assert_pos(R0, zero_allowed = FALSE)
+    assert_pos(R0, zero_allowed = FALSE)
+    print("works y'all")
   (R0 +env_slp*env_dat) / adjusted_eigen(dur_IMild, dur_ICase, prob_hosp, mixing_matrix)
 }
 
@@ -132,6 +133,20 @@ beta_est <- function(squire_model, model_params, R0) {
     new_beta <- squire_model$generate_beta_func(duration_infectiousness = 1/model_params$gamma_I,
                                                 mixing_matrix = mat,
                                                 R0 = R0)
+
+  } else if (class(squire_model)[1] == "explicit_env_SEEIR_model") {
+
+    mat <- process_contact_matrix(model_params$contact_matrix_set[[1]],
+                                  model_params$population)
+
+    assert_custom_class(model_params, "explicit_env_SEEIR_parameters")
+    new_beta <- squire_model$generate_beta_func(dur_IMild = 1/model_params$gamma_IMild,
+                                                dur_ICase = 2/model_params$gamma_ICase,
+                                                prob_hosp = model_params$prob_hosp,
+                                                mixing_matrix = mat,
+                                                R0 = R0,
+                                                env_dat = model_params$env_dat,
+                                                end_slp = model_params$env_slp)
 
   }
 

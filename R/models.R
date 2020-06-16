@@ -13,7 +13,7 @@ explicit_env_model <- function() {
     compare_output(model, pars_obs, data, type=model_class)
   }
 
-  explicit_model <- list(odin_model = explicit_env_SEIR,
+  explicit_model <- list(odin_model = explicit_SEIR,
                          generate_beta_func = beta_est_env_explicit,
                          parameter_func = parameters_explicit_env_SEEIR,
                          run_func = run_explicit_env_SEEIR_model,

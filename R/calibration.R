@@ -81,6 +81,7 @@ calibrate <- function(data,
                       country = NULL,
                       population = NULL,
                       dt = 0.1,
+                      env_slp=NULL,
                       ...) {
 
   # Asserts on arguments
@@ -241,7 +242,7 @@ calibrate <- function(data,
 
   # construct scan
   if (Meff_min == Meff_max) {
-    scan_results <- scan_R0_date(R0_min = R0_min,
+    scan_results <- scan_R0_date_env(R0_min = R0_min,
                                  R0_max = R0_max,
                                  R0_step = R0_step,
                                  R0_prior = R0_prior,
@@ -258,9 +259,11 @@ calibrate <- function(data,
                                  date_hosp_bed_capacity_change = date_hosp_bed_capacity_change,
                                  squire_model = squire_model,
                                  pars_obs = pars_obs,
-                                 n_particles = n_particles)
+                                 n_particles = n_particles,
+                                 env_dat = data$env_dat,
+                                 env_slp = env_slp)
   } else {
-    scan_results <- scan_R0_date_Meff(R0_min = R0_min,
+    scan_results <- scan_R0_date_Meff_env(R0_min = R0_min,
                                       R0_max = R0_max,
                                       R0_step = R0_step,
                                       R0_prior = R0_prior,
@@ -280,7 +283,9 @@ calibrate <- function(data,
                                       date_hosp_bed_capacity_change = date_hosp_bed_capacity_change,
                                       squire_model = squire_model,
                                       pars_obs = pars_obs,
-                                      n_particles = n_particles)
+                                      n_particles = n_particles,
+                                      env_dat = env_dat,
+                                 env_slp = params$env_slp)
   }
 
   # carry out sims drawn from the grid
@@ -337,7 +342,7 @@ calibrate <- function(data,
   }
 
   # second let's recreate the output
-  r$model <- res$inputs$model$odin_model(
+  r$model <- res$inputs$squire_model$odin_model(
     user = res$inputs$model_params, unused_user_action = "ignore"
   )
 
@@ -353,6 +358,7 @@ calibrate <- function(data,
   # and fix the replicates
   r$parameters$replicates <- replicates
   r$parameters$time_period <- as.numeric(diff(as.Date(range(rownames(r$output)))))
+  r$parameters$dt <- model_params$dt
 
   return(r)
 }

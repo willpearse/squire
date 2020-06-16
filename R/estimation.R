@@ -58,7 +58,7 @@
 #'   normalised probabilities at each point
 #'
 #' @import furrr
-scan_R0_date <- function(
+scan_R0_date_env <- function(
   R0_min,
   R0_max,
   R0_step,
@@ -76,7 +76,9 @@ scan_R0_date <- function(
   date_hosp_bed_capacity_change = NULL,
   squire_model = explicit_SEIR(),
   pars_obs = NULL,
-  n_particles = 100) {
+  n_particles = 100,
+  env_dat,
+  env_slp) {
 
   ## Assertions
 
@@ -128,6 +130,8 @@ scan_R0_date <- function(
       save_particles = FALSE,
       Meff_include = FALSE,
       Rt_func = Rt_func,
+      env_slp = env_slp,
+      env_dat = env_dat,
       return = "ll")
 
   } else {
@@ -149,6 +153,8 @@ scan_R0_date <- function(
       save_particles = FALSE,
       Meff_include = FALSE,
       Rt_func = Rt_func,
+            env_slp = env_slp,
+      env_dat = env_dat,
       .progress = TRUE,
       return = "ll")
 
@@ -189,7 +195,7 @@ scan_R0_date <- function(
                   mat_log_ll = mat_log_ll,
                   renorm_mat_LL = renorm_mat_LL,
                   inputs = list(
-                    model = squire_model,
+                    squire_model = squire_model,
                     model_params = model_params,
                     interventions = list(
                       R0_change = R0_change,
@@ -411,7 +417,7 @@ scan_R0_date_Meff <- function(
                   mat_log_ll = mat_log_ll,
                   renorm_mat_LL = renorm_mat_LL,
                   inputs = list(
-                    model = squire_model,
+                    squire_model = squire_model,
                     model_params = model_params,
                     interventions = list(
                       R0_change = R0_change,
@@ -617,7 +623,7 @@ sample_grid_scan <- function(scan_results,
 
   # recreate parameters for re running
   param_grid <- data.frame("R0" = R0, "start_date" = dates, stringsAsFactors = FALSE)
-  squire_model <- scan_results$inputs$model
+  squire_model <- scan_results$inputs$squire_model
   model_params <- scan_results$inputs$model_params
   pars_obs <- scan_results$inputs$pars_obs
   data <- scan_results$inputs$data
@@ -700,7 +706,7 @@ sample_grid_scan <- function(scan_results,
                 model_params = model_params,
                 pars_obs = pars_obs,
                 data = data,
-                model = squire_model))
+                squire_model = squire_model))
 
   class(res) <- "sample_grid_search"
 
@@ -771,7 +777,7 @@ sample_3d_grid_scan <- function(scan_results,
   # recreate parameters for re running
   param_grid <- data.frame("R0" = R0, "start_date" = dates, "Meff" = Meff, stringsAsFactors = FALSE)
   param_grid$start_date <- scan_results$y[match(param_grid$start_date, as.numeric(scan_results$y))]
-  squire_model <- scan_results$inputs$model
+  squire_model <- scan_results$inputs$squire_model
   model_params <- scan_results$inputs$model_params
   pars_obs <- scan_results$inputs$pars_obs
   data <- scan_results$inputs$data
@@ -854,7 +860,7 @@ sample_3d_grid_scan <- function(scan_results,
                 model_params = model_params,
                 pars_obs = pars_obs,
                 data = data,
-                model = squire_model))
+                squire_model = squire_model))
 
   class(res) <- "sample_grid_search"
 
